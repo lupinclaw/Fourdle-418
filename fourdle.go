@@ -4,6 +4,8 @@ import (
     // "context"
     "log"
     "io"
+    "io/ioutil"
+    "strings"
     "fmt"
     "errors"
     "reflect"
@@ -24,52 +26,6 @@ var (
     port   = ":8080"             // TODO: should be from environment
     secret = []byte("secretKey") // TODO: should be from environment
     db *sql.DB
-    
-    // TODO: this is stupid stop this cut it out
-    sqlInitTables = []string{`
-create table if not exists User (
-   UserID              integer  primary key autoincrement,
-   Email               text not null,
-   PasswordSaltAndHash text not null
-);`, `
-create table if not exists SubscriptionType (
-    SubscriptionTypeID integer  primary key autoincrement,
-    Type               text not null,
-    Fee                int  not null
-);`, `
-create table if not exists Subscription (
-    SubscriptionID     integer  primary key autoincrement,
-    UserID             int  not null,
-    SubscriptionTypeID int  not null,
-    Active             int  not null,
-    LastInvoiceDate    text not null,
-    SignUpDate         text nor null,
-    
-    foreign key (UserID) references User (UserID),
-    foreign key (SubscriptionTypeID) references SubscriptionType (SubscriptionTypeID)
-);`, `
-create table if not exists Word (
-    WordID  integer  primary key autoincrement,
-    Letters text not null
-);`, `
-create table if not exists Game (
-    GameID        integer  primary key autoincrement,
-    WordID        int  not null,
-    WinOrLoss     int  not null,
-    WordOfDayDate text,
-    
-    foreign key (WordID) references Word (WordID)
-);`, `
-create table if not exists UserMove (
-    UserMoveID integer  primary key autoincrement,
-    UserID     int  not null,
-    GameID     int  not null,
-    Guess      text not null,
-    Date       text not null,
-    
-    foreign key (UserID) references User (UserID),
-    foreign key (GameID) references Game (GameID)
-);`}
 )
 
 func signup(email string, password string) error {
@@ -124,10 +80,7 @@ func main() {
     db, err = sql.Open("sqlite3", "fourdle.db")
     if err != nil { log.Fatal(err) }
     defer db.Close()
-    for i, statement := range sqlInitTables {
-        _, err  = db.Exec(statement)
-        if err != nil { log.Fatalf("Could not init table %v: %v.\n", i, err) }
-    }
+    execSqlFile("schema.sql")
     
     // set up http endpoints
     
@@ -172,19 +125,23 @@ func main() {
     fatal(http.ListenAndServe(port, nil), "Could not start server")
 }
 
-// func execSql(stmn string, args ...any) { ... }
-// func execSqlFile(path string) {
-//     file, err := ioutil.ReadFile("/some/path/to/file")
-//     if err != nil {
-//         // handle error
-//     }
-//     requests := strings.Split(string(file), ";")
-//     for _, request := range requests {
-//         _, err := db.Exec(request)
-//         // do whatever you need with result and error
-//     }
-// }
-func fatal(err error, args ...any) { if err != nil { log.Fatal("[ERRO] " + fmt.Sprint(args...) + ": " + err.Error()) } }
+func execSqlFile(path string) {
+    file, err := ioutil.ReadFile(path)
+    fatal(err, "Could not read sql script", path)
+    
+    requests := strings.Split(string(file), ";")
+    for _, request := range requests {
+        _, err := db.Exec(request)
+        fatal(err, "Could not execute script", err)
+    }
+}
+
+func fatal(err error, args ...any) {
+    if err != nil {
+        log.Fatal("[ERRO] " + fmt.Sprint(args...) + ": " + err.Error())
+    }
+}
+
 func pp[T any](a T) string {
     r := reflect.ValueOf(&a).Elem()
     t := r.Type()
