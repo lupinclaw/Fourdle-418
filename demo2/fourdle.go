@@ -1,21 +1,31 @@
 package main
 
 import (
+    // "context"
     "log"
+    "io"
+    "fmt"
+    "errors"
+    "reflect"
     "net/http"
+    "net/url"
     "net/mail"
     "database/sql"
+    // "encoding/json"
     // "os"
+    // "golang.org/x/oauth2"
+    // "golang.org/x/oauth2/paypal"
     "golang.org/x/crypto/bcrypt"
+    // "github.com/golang-jwt/jwt"
     _  "github.com/mattn/go-sqlite3"
 )
 
-const (
-    port = ":8080"
-)
-
 var (
+    port   = ":8080"             // TODO: should be from environment
+    secret = []byte("secretKey") // TODO: should be from environment
     db *sql.DB
+    
+    // TODO: this is stupid stop this cut it out
     sqlInitTables = []string{`
 create table if not exists User (
    UserID              integer  primary key autoincrement,
@@ -62,83 +72,55 @@ create table if not exists UserMove (
 );`}
 )
 
-func userSignIn(resp http.ResponseWriter, req *http.Request) {
-    query := req.URL.Query()
-    email, password := query.Get("email"), query.Get("password")
-    log.Printf("[INFO] [%v] Attempting to sign in.\n", email)
-    
-    var hash []byte
-    if err := db.QueryRow("select PasswordSaltAndHash from User where Email=$1", email).Scan(&hash); err == sql.ErrNoRows {
-        // TODO: invalid form or whatever
-        log.Printf("[INFO] [%v] User is not registered.\n", email)
-        return
-    } else if err != nil {
-        // TODO: internal server error
-        log.Printf("[ERRO] [%v] Could not read password from database: %v\n", email, err)
-        return
-    }
-    
-    if err := bcrypt.CompareHashAndPassword(hash, []byte(password)); err != nil {
-        // TODO: invalid form or whatever
-        log.Printf("[INFO] [%v] Entered incorrect password.\n", email)
-        return
-    }
-    
-    log.Printf("[INFO] [%v] Signed in.\n", email)
-    
-    // TODO: send back some sort of session token
-    http.ServeFile(resp, req, "./static/index.html")
-}
-
-func userSignUp(resp http.ResponseWriter, req *http.Request) {
-    query := req.URL.Query()
-    email, password := query.Get("email"), query.Get("password")
+func signup(email string, password string) error {
     log.Printf("[INFO] [%v] Attempting to sign up.\n", email)
     
     // see if email is valid
     _, err := mail.ParseAddress(email)
-    if err != nil {
-        // TODO: invalid form or whatever
-        log.Printf("[INFO] [%v] Email is invalid: %v.\n", email, err)
-        return
-    }
+    if err != nil { return err }
     
     // see if the email is already registered
     var exists int
-    if err := db.QueryRow("select exists(select 1 from User where Email=$1);", email).Scan(&exists); err != nil {
-        // TODO: internal server error
-        log.Printf("[ERRO] [%v] Could not check database for user: %v\n", email, err)
-        return
-    } else if exists == 1 {
-        // TODO: invalid form or whatever
-        log.Printf("[INFO] [%v] User is already registered.\n", email)
-        return
-    }
+    err = db.QueryRow("select exists(select 1 from User where Email=$1);", email).Scan(&exists)
+    if err    != nil { log.Fatal("signup DB query failed:", err) }
+    if exists == 1   { return errors.New("Email address is already registered.") }
     
-    // TODO: stinky paypal will not let me make a developer account........
+    // TODO: check that password is ok
+    
+    // TODO: temporary redirect to paypal (?)
     
     // generate password hash
     hash, err := bcrypt.GenerateFromPassword([]byte(password), 8)
-    if err != nil {
-        // TODO: internal server error
-        log.Printf("[ERRO] [%v] Could not generate passord hash:", email, err)
-        return
-    }
+    fatal(err, "[signup] could not encrypt password", password)
     
+    // insert into table
     _, err  = db.Exec("insert into User (Email, PasswordSaltAndHash) values ($1, $2);", email, string(hash[:]))
-    if err != nil {
-        // TODO: internal server error
-        log.Printf("[ERRO] [%v] Could not insert user into table: %v\n", email, err)
-        return
-    }
+    fatal(err, "[signup] could not insert user", email)
     
     log.Printf("[INFO] [%v] Registered user.\n", email)
-    http.ServeFile(resp, req, "./static/index.html")
+    return nil;
+}
+
+func login(email, password string) error {
+    log.Printf("[INFO] [%v] Attempting to sign in.\n", email)
+    var hash []byte
+    var err error
+    
+    err = db.QueryRow("select PasswordSaltAndHash from User where Email=$1", email).Scan(&hash)
+    if err == sql.ErrNoRows { return errors.New("User is not registered.") }
+    fatal(err, "[login] Could not read password from database");
+    
+    err = bcrypt.CompareHashAndPassword(hash, []byte(password))
+    if err != nil { return errors.New("Entered incorrect password.") }
+    
+    log.Printf("[INFO] [%v] Signed in.\n", email)
+    return nil
 }
 
 func main() {
-    // init database
     var err error
+    
+    // init database
     db, err = sql.Open("sqlite3", "fourdle.db")
     if err != nil { log.Fatal(err) }
     defer db.Close()
@@ -147,12 +129,70 @@ func main() {
         if err != nil { log.Fatalf("Could not init table %v: %v.\n", i, err) }
     }
     
-    // set http handlers
-    http.Handle("/", http.FileServer(http.Dir("./static/")))
-    http.HandleFunc("/sign-in", userSignIn)
-    http.HandleFunc("/sign-up", userSignUp)
+    // set up http endpoints
+    
+    fs := http.FileServer(http.Dir("./static/"))
+    http.HandleFunc("/", func(resp http.ResponseWriter, req *http.Request) {
+        log.Printf("REQUEST: %v\n", pp(*req))
+        fs.ServeHTTP(resp, req)
+    })
+    
+    http.HandleFunc("/sign-in", func(resp http.ResponseWriter, req *http.Request) {
+        query := req.URL.Query()
+        email, password := query.Get("email"), query.Get("password")
+        
+        if err = login(email, password); err != nil {
+            log.Printf("[INFO] [%v] Rejected login: %v\n", email, err)
+            resp.WriteHeader(http.StatusBadRequest)
+            io.WriteString(resp, err.Error())
+            return
+        }
+        
+        http.Redirect(resp, req, "/", http.StatusFound)
+    })
+    
+    http.HandleFunc("/sign-up", func(resp http.ResponseWriter, req *http.Request) {
+        resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+        
+        query := req.URL.Query()
+        email, password := query.Get("email"), query.Get("password")
+        
+        if err = signup(email, password); err != nil {
+            log.Printf("[ERRO] [%v] Could not sign up: %v\n", email, err)
+            resp.WriteHeader(http.StatusBadRequest)
+            io.WriteString(resp, err.Error())
+            return
+        }
+        
+        http.Redirect(resp, req, fmt.Sprintf("/sign-in?email=%v&password=%v", url.PathEscape(email), url.PathEscape(password)), http.StatusFound)
+    })
     
     // profit
-    log.Fatal(http.ListenAndServe(port, nil))
+    log.Println("Starting server...")
+    fatal(http.ListenAndServe(port, nil), "Could not start server")
 }
 
+// func execSql(stmn string, args ...any) { ... }
+// func execSqlFile(path string) {
+//     file, err := ioutil.ReadFile("/some/path/to/file")
+//     if err != nil {
+//         // handle error
+//     }
+//     requests := strings.Split(string(file), ";")
+//     for _, request := range requests {
+//         _, err := db.Exec(request)
+//         // do whatever you need with result and error
+//     }
+// }
+func fatal(err error, args ...any) { if err != nil { log.Fatal("[ERRO] " + fmt.Sprint(args...) + ": " + err.Error()) } }
+func pp[T any](a T) string {
+    r := reflect.ValueOf(&a).Elem()
+    t := r.Type()
+    s := fmt.Sprintf("%v {\n", t);
+    for i := 0; i < r.NumField(); i++ {
+        f := r.Field(i)
+        s += fmt.Sprintf("    %s %s = %v\n", t.Field(i).Name, f.Type(), f)
+    }
+    s += "}"
+    return s;
+}
