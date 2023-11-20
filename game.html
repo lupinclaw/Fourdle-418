@@ -1,32 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
     <link rel="stylesheet" href="game.css">
+    <head>
+        <script src="gameScript.js" defer></script>
+        <title>
+            Fourdle Game
+        </title>
+    </head>
     <header>
         Fourdle
     </header>
     <body>
         <div id="game-container">
             <div id="guesses">
-                <table>
-                    <tr>
+                <table id="guess-table">
+                    <tr id="row 0">
+                        <td class style="animation-delay: 0ms">
+                            <div class="tile"></div>
+                        </td>
+                        <td class style="animation-delay: 100ms">
+                            <div class="tile"></div>
+                        </td>
+                        <td class style="animation-delay: 200ms">
+                            <div class="tile"></div>
+                        </td>
+                        <td class style="animation-delay: 300ms">
+                            <div class="tile"></div>
+                        </td>
+                    </tr>
+                    <tr id="row 1">
                         <td><div class="tile"></div></td>
                         <td><div class="tile"></div></td>
                         <td><div class="tile"></div></td>
                         <td><div class="tile"></div></td>
                     </tr>
-                    <tr>
+                    <tr id="row 2">
                         <td><div class="tile"></div></td>
                         <td><div class="tile"></div></td>
                         <td><div class="tile"></div></td>
                         <td><div class="tile"></div></td>
                     </tr>
-                    <tr>
-                        <td><div class="tile"></div></td>
-                        <td><div class="tile"></div></td>
-                        <td><div class="tile"></div></td>
-                        <td><div class="tile"></div></td>
-                    </tr>
-                    <tr>
+                    <tr id="row 3">
                         <td><div class="tile"></div></td>
                         <td><div class="tile"></div></td>
                         <td><div class="tile"></div></td>
@@ -36,38 +50,38 @@
             </div>
             <div id="keyboard">
                 <div class="keyboard-row">
-                    <button type="button" class="key" data-key="q">Q</button>
-                    <button type="button" class="key" data-key="w">W</button>
-                    <button type="button" class="key" data-key="e">E</button>
-                    <button type="button" class="key" data-key="r">R</button>
-                    <button type="button" class="key" data-key="t">T</button>
-                    <button type="button" class="key" data-key="y">Y</button>
-                    <button type="button" class="key" data-key="u">U</button>
-                    <button type="button" class="key" data-key="i">I</button>
-                    <button type="button" class="key" data-key="o">O</button>
-                    <button type="button" class="key" data-key="p">P</button>
+                    <button type="button" class="key" onclick="keyPress('Q')" data-key="q">Q</button>
+                    <button type="button" class="key" onclick="keyPress('W')" data-key="w">W</button>
+                    <button type="button" class="key" onclick="keyPress('E')" data-key="e">E</button>
+                    <button type="button" class="key" onclick="keyPress('R')" data-key="r">R</button>
+                    <button type="button" class="key" onclick="keyPress('T')" data-key="t">T</button>
+                    <button type="button" class="key" onclick="keyPress('Y')" data-key="y">Y</button>
+                    <button type="button" class="key" onclick="keyPress('U')" data-key="u">U</button>
+                    <button type="button" class="key" onclick="keyPress('I')" data-key="i">I</button>
+                    <button type="button" class="key" onclick="keyPress('O')" data-key="o">O</button>
+                    <button type="button" class="key" onclick="keyPress('P')" data-key="p">P</button>
                 </div>
                 <div class="keyboard-row">
-                    <button type="button" class="key" data-key="a">A</button>
-                    <button type="button" class="key" data-key="s">S</button>
-                    <button type="button" class="key" data-key="d">D</button>
-                    <button type="button" class="key" data-key="f">F</button>
-                    <button type="button" class="key" data-key="g">G</button>
-                    <button type="button" class="key" data-key="h">H</button>
-                    <button type="button" class="key" data-key="j">J</button>
-                    <button type="button" class="key" data-key="k">K</button>
-                    <button type="button" class="key" data-key="l">L</button>
+                    <button type="button" class="key" onclick="keyPress('A')" data-key="a">A</button>
+                    <button type="button" class="key" onclick="keyPress('S')" data-key="s">S</button>
+                    <button type="button" class="key" onclick="keyPress('D')" data-key="d">D</button>
+                    <button type="button" class="key" onclick="keyPress('F')" data-key="f">F</button>
+                    <button type="button" class="key" onclick="keyPress('G')" data-key="g">G</button>
+                    <button type="button" class="key" onclick="keyPress('H')" data-key="h">H</button>
+                    <button type="button" class="key" onclick="keyPress('J')" data-key="j">J</button>
+                    <button type="button" class="key" onclick="keyPress('K')" data-key="k">K</button>
+                    <button type="button" class="key" onclick="keyPress('L')" data-key="l">L</button>
                 </div>
                 <div class="keyboard-row">
-                    <button type="button" class="key-alt" data-key="enter">ENTER</button>
-                    <button type="button" class="key" data-key="z">Z</button>
-                    <button type="button" class="key" data-key="x">X</button>
-                    <button type="button" class="key" data-key="c">C</button>
-                    <button type="button" class="key" data-key="v">V</button>
-                    <button type="button" class="key" data-key="b">B</button>
-                    <button type="button" class="key" data-key="n">N</button>
-                    <button type="button" class="key" data-key="m">M</button>
-                    <button type="button" class="key-alt" data-key="backspace">&lt;X</button>
+                    <button type="button" class="key-alt" onclick="enterPress()" data-key="enter">ENTER</button>
+                    <button type="button" class="key" onclick="keyPress('Z')" data-key="z">Z</button>
+                    <button type="button" class="key" onclick="keyPress('X')" data-key="x">X</button>
+                    <button type="button" class="key" onclick="keyPress('C')" data-key="c">C</button>
+                    <button type="button" class="key" onclick="keyPress('V')" data-key="v">V</button>
+                    <button type="button" class="key" onclick="keyPress('B')" data-key="b">B</button>
+                    <button type="button" class="key" onclick="keyPress('N')" data-key="n">N</button>
+                    <button type="button" class="key" onclick="keyPress('M')" data-key="m">M</button>
+                    <button type="button" class="key-alt" onclick="backspacePress()" data-key="backspace">&lt;X</button>
                 </div>
             </div>
         </div>

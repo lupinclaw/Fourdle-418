@@ -19,10 +19,10 @@ header {
     height: 700px;
     width: 550px;
     padding: 2%;
+    margin: auto;
+    /*display: inline-block;*/
 
     /*border: 2px solid #565758;*/
-
-    display: inline-block;
 }
 
 /* Guesses */
@@ -30,11 +30,12 @@ header {
     /*border: 2px solid #565758;*/
 }
 
-table {
+#guess-table {
     width: 70%;
     margin-left: 15%;
     margin-right: 15%;
     border-spacing: 4px;
+    table-layout: fixed;
 
     /*border: 2px solid #565758;*/
 }
@@ -43,8 +44,16 @@ tr {
     width: 25%;
 }
 
+td {
+    
+}
+
 td .tile {
     aspect-ratio: 1 / 1;
+
+    color: white;
+    font-size: 36px;
+    font-family: "Franklin Gothic", serif;
 
     border: 2px solid #565758;
 }
