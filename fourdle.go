@@ -86,11 +86,16 @@ func main() {
     if wordCount == 0 {
         // populate word table
         log.Println("Populating Fourdles...")
+        
+        stmt, err := db.Prepare("insert into Word (Letters) values ($1);")
+        fatal(err, "could not prepare statement")
+        
         file, err := ioutil.ReadFile("fourdles.txt")
         fatal(err, "could not get fourdles")
+        
         fourdles := strings.Split(string(file), "\n")
         for _, fourdle := range fourdles {
-            _, err := db.Exec("insert into Word (Letters) values ($1);", fourdle)
+            _, err := stmt.Exec(fourdle)
             fatal(err, "Could not insert fourdle", fourdle)
         }
     }
