@@ -51,7 +51,7 @@ td .tile {
 
 /* Keyboard */
 #keyboard {
-    height: 40%;
+    height: 35%;
     margin-left: -10%;
     margin-right: -10%;
     padding-top: 4%;
@@ -61,7 +61,7 @@ td .tile {
 
 #keyboard .keyboard-row {
     height: 33%;
-    padding: 1%;
+    padding: 0.75%;
     text-align: center;
     box-sizing: border-box;
 
@@ -70,7 +70,7 @@ td .tile {
 
 #keyboard .keyboard-row .key, #keyboard .keyboard-row .key-alt {
     font-size: 24px;
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-family: "Franklin Gothic", serif;
     font-weight: bold;
     color: white;
     cursor: pointer;
@@ -86,5 +86,5 @@ td .tile {
 }
 
 #keyboard .keyboard-row .key-alt {
-    width: 15%;
+    width: 16%;
 }
