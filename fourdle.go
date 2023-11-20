@@ -81,6 +81,20 @@ func main() {
     if err != nil { log.Fatal(err) }
     defer db.Close()
     execSqlFile("schema.sql")
+    var wordCount int
+    err = db.QueryRow("select Count(*) from Word").Scan(&wordCount)
+    fatal(err, "query failed")
+    if wordCount == 0 {
+        // populate word table
+        log.Println("Populating Fourdles...")
+        file, err := ioutil.ReadFile("fourdles.txt")
+        fatal(err, "could not get fourdles")
+        fourdles := strings.Split(string(file), "\n")
+        for _, fourdle := range fourdles {
+            _, err := db.Exec("insert into Word (Letters) values ($1);", fourdle)
+            fatal(err, "Could not insert fourdle", fourdle)
+        }
+    }
     
     // set up http endpoints
     
