@@ -9,12 +9,13 @@ import (
     "fmt"
     "errors"
     "reflect"
+    "runtime/debug"
     "net/http"
-    "net/url"
+    // "net/url"
     "net/mail"
     "database/sql"
     // "encoding/json"
-    // "os"
+    "os"
     // "golang.org/x/oauth2"
     // "golang.org/x/oauth2/paypal"
     "golang.org/x/crypto/bcrypt"
@@ -38,12 +39,10 @@ func signup(email string, password string) error {
     // see if the email is already registered
     var exists int
     err = db.QueryRow("select exists(select 1 from User where Email=$1);", email).Scan(&exists)
-    if err    != nil { log.Fatal("signup DB query failed:", err) }
-    if exists == 1   { return errors.New("Email address is already registered.") }
+    fatal(err, "[signup] DB query failed")
+    if exists == 1 { return errors.New("Email address is already registered.") }
     
     // TODO: check that password is ok
-    
-    // TODO: temporary redirect to paypal (?)
     
     // generate password hash
     hash, err := bcrypt.GenerateFromPassword([]byte(password), 8)
@@ -63,11 +62,11 @@ func login(email, password string) error {
     var err error
     
     err = db.QueryRow("select PasswordSaltAndHash from User where Email=$1", email).Scan(&hash)
-    if err == sql.ErrNoRows { return errors.New("User is not registered.") }
+    if err == sql.ErrNoRows { return errors.New("User is not registered") }
     fatal(err, "[login] Could not read password from database");
     
     err = bcrypt.CompareHashAndPassword(hash, []byte(password))
-    if err != nil { return errors.New("Entered incorrect password.") }
+    if err != nil { return errors.New("Entered incorrect password") }
     
     log.Printf("[INFO] [%v] Signed in.\n", email)
     return nil
@@ -100,7 +99,7 @@ func main() {
     
     fs := http.FileServer(http.Dir("./static/"))
     http.HandleFunc("/", func(resp http.ResponseWriter, req *http.Request) {
-        log.Printf("REQUEST: %v\n", pp(*req))
+        log.Printf("[INFO] Request to `/` %v\n", pp(*req))
         fs.ServeHTTP(resp, req)
     })
     
@@ -115,6 +114,7 @@ func main() {
             return
         }
         
+        // TODO: return session token in response
         http.Redirect(resp, req, "/", http.StatusFound)
     })
     
@@ -125,17 +125,20 @@ func main() {
         email, password := query.Get("email"), query.Get("password")
         
         if err = signup(email, password); err != nil {
-            log.Printf("[ERRO] [%v] Could not sign up: %v\n", email, err)
+            log.Printf("[INFO] [%v] Could not sign up: %v\n", email, err)
             resp.WriteHeader(http.StatusBadRequest)
             io.WriteString(resp, err.Error())
             return
         }
         
-        http.Redirect(resp, req, fmt.Sprintf("/sign-in?email=%v&password=%v", url.PathEscape(email), url.PathEscape(password)), http.StatusFound)
+        fatal(login(email, password), "Could not log in to new account")
+        
+        // TODO: return session token in response
+        http.Redirect(resp, req, "/", http.StatusFound)
     })
     
     // profit
-    log.Println("Starting server...")
+    log.Println("Serving at http://localhost"+port)
     fatal(http.ListenAndServe(port, nil), "Could not start server")
 }
 
@@ -146,13 +149,15 @@ func execSqlFile(path string) {
     requests := strings.Split(string(file), ";")
     for _, request := range requests {
         _, err := db.Exec(request)
-        fatal(err, "Could not execute script", err)
+        fatal(err, "Could not execute script", path)
     }
 }
 
 func fatal(err error, args ...any) {
     if err != nil {
-        log.Fatal("[ERRO] " + fmt.Sprint(args...) + ": " + err.Error())
+        log.Println("[FATAL] " + fmt.Sprint(args...) + ": " + err.Error())
+        debug.PrintStack()
+        os.Exit(1)
     }
 }
 
