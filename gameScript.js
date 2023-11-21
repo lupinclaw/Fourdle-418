@@ -42,13 +42,16 @@ function keyPress(input)
     letters++;
     var guessTable = document.getElementById("guess-table")
     var tile = guessTable.rows.item(guesses).getElementsByClassName("tile").item(letters)
-    tile.innerHTML = input;
+    tile.style.border = "2px solid #565758"
+    tile.innerHTML = input
 }
 
 
 
 function enterPress()
-{ // seems to add last used letter sometimes?
+{
+    var guessTable = document.getElementById("guess-table")
+
     if(letters < 3)
     {
         console.log("Guessed word is less than 4 letters.");
@@ -56,20 +59,41 @@ function enterPress()
     }
 
     let wordGuessed = ""
+    var tile;
 
     for(let i = 0; i < 4; i++) {
-        var guessTable = document.getElementById("guess-table")
-        var tile = guessTable.rows.item(guesses).getElementsByClassName("tile").item(i)
+        tile = guessTable.rows.item(guesses).getElementsByClassName("tile").item(i)
         wordGuessed += tile.innerHTML;
     }
-    console.log("hii this is the worddd " + wordGuessed)
 
-    tile.style.backgroundColor = "green";
+    for(let i = 0; i < 4; i++)
+    {
+        tile = guessTable.rows.item(guesses).getElementsByClassName("tile").item(i)
+        if(wordOfTheDay[i] === wordGuessed[i])
+        {
+            tile.style.backgroundColor = "#538d4e";
+            // style keyboard
 
-    for(let row of guessTable.rows) {
-        for (let cell of row.cells) {
-            //cell.getElementsByClassName("tile").item(0).innerHTML = input;
-
+        }
+        else if(wordOfTheDay.includes(tile.innerHTML))
+        {
+            tile.style.backgroundColor = "#b59f3b";
+            // style keyboard
+        }
+        else
+        {
+            tile.style.backgroundColor = "#3a3a3c"
+            // style keyboard
+        }
+    }
+    letters = -1;
+    guesses++;
+    if(wordOfTheDay === wordGuessed)
+    {
+        // Disable buttons (better way to do this?).
+        const buttons = document.getElementsByClassName("key");
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].disabled=true;
         }
     }
 }
@@ -83,6 +107,7 @@ function backspacePress()
     }
     var guessTable = document.getElementById("guess-table")
     var tile = guessTable.rows.item(guesses).getElementsByClassName("tile").item(letters)
+    tile.style.border = "2px solid #3a3a3c"
     tile.innerHTML = ""
     letters--;
 }
