@@ -34,7 +34,7 @@ document.addEventListener("keyup", (event) =>
 
 function keyPress(input)
 {
-    if(letters >= 3)
+    if(letters >= 3 || guesses >= 4)
     {
         // If we have reached the maximum amount of letters, return since we don't want the letter to change.
         return;
@@ -52,7 +52,7 @@ function enterPress()
 {
     var guessTable = document.getElementById("guess-table")
 
-    if(letters < 3)
+    if(letters < 3 || guesses >= 4)
     {
         console.log("Guessed word is less than 4 letters.");
         return;
@@ -66,6 +66,33 @@ function enterPress()
         wordGuessed += tile.innerHTML;
     }
 
+    // Only first letter which is in word should be yellow.
+    // If a letter is in the word we can't have it be
+    // yellow, then be green in the same guess.
+    // Same with if a green is first, can't have rest be yellow.
+    // 2 for loops...?
+    let foundLetter
+    for (let wordIndex = 0; wordIndex < 4; wordIndex++) {
+        tile = guessTable.rows.item(guesses).getElementsByClassName("tile").item(wordIndex)
+        foundLetter = false
+        for(let guessIndex = 0; guessIndex < 4; guessIndex++) {
+            if(wordOfTheDay[wordIndex] === wordGuessed[guessIndex]) {
+                if(wordIndex === guessIndex) {
+                    tile.style.backgroundColor = "#538d4e"
+                    foundLetter = true
+                    break
+                }
+                else {
+                    tile.style.backgroundColor = "#b59f3b"
+                    foundLetter = true
+                }
+            }
+        }
+        if(!foundLetter) {
+            tile.style.backgroundColor = "#3a3a3c"
+        }
+    }
+
     for(let i = 0; i < 4; i++)
     {
         tile = guessTable.rows.item(guesses).getElementsByClassName("tile").item(i)
@@ -73,16 +100,10 @@ function enterPress()
         {
             tile.style.backgroundColor = "#538d4e";
             // style keyboard
-
         }
         else if(wordOfTheDay.includes(tile.innerHTML))
         {
             tile.style.backgroundColor = "#b59f3b";
-            // style keyboard
-        }
-        else
-        {
-            tile.style.backgroundColor = "#3a3a3c"
             // style keyboard
         }
     }
@@ -90,17 +111,13 @@ function enterPress()
     guesses++;
     if(wordOfTheDay === wordGuessed)
     {
-        // Disable buttons (better way to do this?).
-        const buttons = document.getElementsByClassName("key");
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].disabled=true;
-        }
+        guesses += 5
     }
 }
 
 function backspacePress()
 {
-    if(letters === -1)
+    if(letters === -1 || guesses >= 4)
     {
         console.log("Returned since there were no letters.")
         return;
