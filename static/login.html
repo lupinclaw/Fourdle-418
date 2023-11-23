@@ -1,24 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-      <meta charset="UTF-8" />
-      <title>Fourdle</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <h1>Welcome to Fourdle</h1>
-    <p>Please log in to start playing more games!</p>
-    <form method="get" action="sign-in">
-      <fieldset>
-        <label for="email">Email:
-        <input type="email" id="email" name="email" required></label>
-        <br>
-        <label for="password">Password:
-        <input type="password" id="password" name="password" required></label>
-        <a href="password_reset">Forgot your password?</a>
-        <input type="submit" value="Login">
-      </fieldset>
-    </form>
-  <p>Don't have an account? <a href="signup.html">Sign up!</a></p>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>Fourdle</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+<script src="scripts.js"></script>
+<div class="navigationBar">
+  <a id="menuIcon" href="javascript:void(0);" onclick="onClickNav()"><span class="material-symbols-outlined size-48">menu</span></a>
+  <div class="navigation" id="menuLinks">
+    <a href="index.hmtl">Home</a>
+    <a href="game.html>">Play</a>
+    <a href="metrics.html">Metrics</a>
+    <a href="account.html">Account Settings</a>
+  </div>
+</div>
+<h1>Welcome to Fourdle</h1>
+<p>Please log in to start playing more games!</p>
+<form method="get" action="sign-in">
+  <fieldset>
+    <label for="email">Email:
+      <input type="email" id="email" name="email" required></label>
+    <br>
+    <label for="password">Password:
+      <input type="password" id="password" name="password" required></label>
+    <a href="password_reset">Forgot your password?</a>
+    <input type="submit" value="Login">
+  </fieldset>
+</form>
+<p>Don't have an account? <a href="signup.html">Sign up!</a></p>
+</body>
 </html>
