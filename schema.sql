@@ -24,7 +24,7 @@ create table if not exists Subscription (
 
 create table if not exists Word (
     WordID  integer  primary key autoincrement,
-    Letters text not null
+    Letters text not null,
     WordOfDayDate date
 );
 

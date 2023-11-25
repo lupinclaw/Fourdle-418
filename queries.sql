@@ -13,8 +13,15 @@ G.WinOrLoss = 1;
 /* Get 10 most recent words */
 SELECT W.Letters
 FROM UserGame U, Game G, Word W
-WHERE U.GameID = G.GameID AND G.WordID = W.WordID
+WHERE U.GameID = G.GameID AND G.WordID = W.WordID AND
+U.UserID = ?
 ORDER BY U.Date DESC LIMIT 10;
+
+/* Get all seen words */
+SELECT W.Letters
+FROM UserGame U, Game G, Word W
+WHERE U.GameID = G.GameID AND G.WordID = W.WordID
+ORDER BY U.Date DESC;
 
 /* Get number of games total for each of the last 30 days */
 SELECT U.Date, COUNT(U.GameID)
