@@ -159,3 +159,38 @@ span.size-30 {
     font-size: 30px;
     font-variation-settings: 'OPSZ' 30;
 }
+
+.charts {
+    display: flex;
+    flex-direction: column;
+}
+
+.charts div {
+    margin: auto;
+}
+
+button {
+    height: 20px;
+    width: 200px;
+    margin: 5px;
+    background-color: var(--link);
+    border: none;
+    border-radius: 3px;
+}
+
+.linkButton, .linkButton:hover, .linkButton:visited {
+    color: black;
+    text-decoration: none;
+    padding-top: 0;
+}
+
+button:hover {
+    background-color: var(--linkHover);
+}
+
+#buttonDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 50px;
+}

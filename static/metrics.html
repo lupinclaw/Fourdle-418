@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
-<script src="scripts.js" onload="loadGeneralMetrics()"></script>
+
+<script src="scripts.js"></script>
 <div class="navigationBar">
   <a id="menuIcon" href="javascript:void(0);" onclick="onClickNav()"><span class="material-symbols-outlined size-48">menu</span></a>
   <div class="navigation" id="menuLinks">
@@ -21,28 +22,20 @@
 <div class="metrics">
   <div class="numericalMetrics">
     <h2>Total Games Played:</h2>
-    <h3 id="gamesPlayed">20</h3><a href="gamesChart.html"><span class="material-symbols-outlined chartIcon size-30">bar_chart</span></a>
+    <h3 id="gamesPlayed"></h3><a href="gamesChart.html"><span class="material-symbols-outlined chartIcon size-30">bar_chart</span></a>
     <h2>Total Games Won:</h2>
-    <h3 id="gamesWon">15</h3><a href="gamesChart.html"><span class="material-symbols-outlined chartIcon size-30">bar_chart</span></a>
+    <h3 id="gamesWon"></h3><a href="gamesChart.html"><span class="material-symbols-outlined chartIcon size-30">bar_chart</span></a>
     <h2>Win Rate</h2>
-    <h3 id="winRate">20</h3><a href="winChart.html"><span class="material-symbols-outlined chartIcon size-30">show_chart</span></a>
+    <h3 id="winRate"></h3><a href="winRateChart.html"><span class="material-symbols-outlined chartIcon size-30">show_chart</span></a>
   </div>
   <div class="listofWords">
     <h2>Recently seen words:</h2>
     <!-- need some js here to get words from the database -->
-    <h3>tuna
-      fish
-      fuck
-      shit
-      damn
-      hell
-      case
-      menu
-      note
-      pens
+    <h3 id="seenWords">
     </h3>
     <a id="seenWordsLink" href="seenWords.html">View all seen words here!</a>
   </div>
 </div>
 </body>
+<script src="metrics.js"></script>
 </html>
