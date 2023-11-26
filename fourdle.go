@@ -8,9 +8,11 @@ import (
     "strings"
     "fmt"
     "errors"
+    "math/rand"
     "reflect"
     "runtime/debug"
     "net/http"
+    "time"
     // "net/url"
     "net/mail"
     "database/sql"
@@ -87,17 +89,33 @@ func main() {
         // populate word table
         log.Println("Populating Fourdles...")
         
-        stmt, err := db.Prepare("insert into Word (Letters) values ($1);")
+        stmt1, err := db.Prepare("insert into Word (Letters, WordOfDayDate) values ($1, $2);")
+        fatal(err, "could not prepare statement")
+        
+        stmt2, err := db.Prepare("insert into Word (Letters) values ($1);")
         fatal(err, "could not prepare statement")
         
         file, err := ioutil.ReadFile("fourdles.txt")
         fatal(err, "could not get fourdles")
         
         fourdles := strings.Split(string(file), "\n")
-        for _, fourdle := range fourdles {
-            _, err := stmt.Exec(fourdle)
-            fatal(err, "Could not insert fourdle", fourdle)
+        rand.Shuffle(len(fourdles), func(i, j int) { fourdles[i], fourdles[j] = fourdles[j], fourdles[i] })
+        
+        rn  := time.Now();
+        day := time.Date(rn.Year(), rn.Month(), rn.Day(), 0, 0, 0, 0, rn.Location())
+        for idx, fourdle := range fourdles {
+            if idx < 365 * 5 {
+                _, err := stmt1.Exec(fourdle, day)
+                fatal(err, "Could not insert fourdle", fourdle)
+                day = day.Add(time.Hour * 24)
+            } else {
+                _, err := stmt2.Exec(fourdle)
+                fatal(err, "Could not insert fourdle", fourdle)
+            }
         }
+        
+        stmt1.Close()
+        stmt2.Close()
     }
     
     // set up http endpoints
@@ -149,12 +167,12 @@ func main() {
 
 func execSqlFile(path string) {
     file, err := ioutil.ReadFile(path)
-    fatal(err, "Could not read sql script", path)
+    fatal(err, "Could not read sql script ", path)
     
     requests := strings.Split(string(file), ";")
     for _, request := range requests {
         _, err := db.Exec(request)
-        fatal(err, "Could not execute script", path)
+        fatal(err, "Could not execute script ", path)
     }
 }
 
