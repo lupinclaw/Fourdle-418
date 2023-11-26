@@ -1,0 +1,98 @@
+html, body {
+    text-align: center;
+
+    background-color: #121213;
+}
+
+header {
+    padding-bottom: 1%;
+    text-align: center;
+
+    font-size: 36px;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    color: white;
+
+    border-bottom: 1px solid #565758;
+}
+
+#game-container {
+    height: 700px;
+    width: 550px;
+    padding: 2%;
+    margin: auto;
+
+    /*border: 2px solid #565758;*/
+}
+
+/* Guesses */
+#guesses {
+    /*border: 2px solid #565758;*/
+}
+
+#guess-table {
+    width: 70%;
+    margin-left: 15%;
+    margin-right: 15%;
+    border-spacing: 4px;
+    table-layout: fixed;
+
+    /*border: 2px solid #565758;*/
+}
+
+tr {
+    width: 25%;
+}
+
+td {
+    
+}
+
+td .tile {
+    aspect-ratio: 1 / 1;
+
+    color: white;
+    font-size: 36px;
+    font-family: "Franklin Gothic", serif;
+
+    border: 2px solid #3a3a3c;
+}
+
+/* Keyboard */
+#keyboard {
+    height: 35%;
+    margin-left: -10%;
+    margin-right: -10%;
+    padding-top: 4%;
+
+    /*border: 2px solid #565758;*/
+}
+
+#keyboard .keyboard-row {
+    height: 33%;
+    padding: 0.75%;
+    text-align: center;
+    box-sizing: border-box;
+
+    /*border: 2px solid #565758;*/
+}
+
+#keyboard .keyboard-row .key, #keyboard .keyboard-row .key-alt {
+    font-size: 24px;
+    font-family: "Franklin Gothic", serif;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+
+    height: 100%;
+    width: 8.5%;
+    margin: 1px;
+
+    border: 0;
+    border-radius: 3px;
+
+    background-color: #818384;
+}
+
+#keyboard .keyboard-row .key-alt {
+    width: 16%;
+}

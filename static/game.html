@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <link rel="stylesheet" href="gameStyle.css">
+    <head>
+        <script src="../gameScript.js" defer></script>
+        <title>
+            Fourdle Game
+        </title>
+    </head>
+    <header>
+        Fourdle
+    </header>
+    <body>
+        <div id="game-container">
+            <div id="guesses">
+                <table id="guess-table">
+                    <tr id="row 0">
+                        <td class style="animation-delay: 0ms">
+                            <div class="tile"></div>
+                        </td>
+                        <td class style="animation-delay: 100ms">
+                            <div class="tile"></div>
+                        </td>
+                        <td class style="animation-delay: 200ms">
+                            <div class="tile"></div>
+                        </td>
+                        <td class style="animation-delay: 300ms">
+                            <div class="tile"></div>
+                        </td>
+                    </tr>
+                    <tr id="row 1">
+                        <td><div class="tile"></div></td>
+                        <td><div class="tile"></div></td>
+                        <td><div class="tile"></div></td>
+                        <td><div class="tile"></div></td>
+                    </tr>
+                    <tr id="row 2">
+                        <td><div class="tile"></div></td>
+                        <td><div class="tile"></div></td>
+                        <td><div class="tile"></div></td>
+                        <td><div class="tile"></div></td>
+                    </tr>
+                    <tr id="row 3">
+                        <td><div class="tile"></div></td>
+                        <td><div class="tile"></div></td>
+                        <td><div class="tile"></div></td>
+                        <td><div class="tile"></div></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="keyboard">
+                <div class="keyboard-row">
+                    <button type="button" class="key" onclick="keyPress('Q')" id="key-q">Q</button>
+                    <button type="button" class="key" onclick="keyPress('W')" id="key-w">W</button>
+                    <button type="button" class="key" onclick="keyPress('E')" id="key-e">E</button>
+                    <button type="button" class="key" onclick="keyPress('R')" id="key-r">R</button>
+                    <button type="button" class="key" onclick="keyPress('T')" id="key-t">T</button>
+                    <button type="button" class="key" onclick="keyPress('Y')" id="key-y">Y</button>
+                    <button type="button" class="key" onclick="keyPress('U')" id="key-u">U</button>
+                    <button type="button" class="key" onclick="keyPress('I')" id="key-i">I</button>
+                    <button type="button" class="key" onclick="keyPress('O')" id="key-o">O</button>
+                    <button type="button" class="key" onclick="keyPress('P')" id="key-p">P</button>
+                </div>
+                <div class="keyboard-row">
+                    <button type="button" class="key" onclick="keyPress('A')" id="key-a">A</button>
+                    <button type="button" class="key" onclick="keyPress('S')" id="key-s">S</button>
+                    <button type="button" class="key" onclick="keyPress('D')" id="key-d">D</button>
+                    <button type="button" class="key" onclick="keyPress('F')" id="key-f">F</button>
+                    <button type="button" class="key" onclick="keyPress('G')" id="key-g">G</button>
+                    <button type="button" class="key" onclick="keyPress('H')" id="key-h">H</button>
+                    <button type="button" class="key" onclick="keyPress('J')" id="key-j">J</button>
+                    <button type="button" class="key" onclick="keyPress('K')" id="key-k">K</button>
+                    <button type="button" class="key" onclick="keyPress('L')" id="key-l">L</button>
+                </div>
+                <div class="keyboard-row">
+                    <button type="button" class="key-alt" onclick="enterPress()" id="key-enter">ENTER</button>
+                    <button type="button" class="key" onclick="keyPress('Z')" id="key-z">Z</button>
+                    <button type="button" class="key" onclick="keyPress('X')" id="key-x">X</button>
+                    <button type="button" class="key" onclick="keyPress('C')" id="key-c">C</button>
+                    <button type="button" class="key" onclick="keyPress('V')" id="key-v">V</button>
+                    <button type="button" class="key" onclick="keyPress('B')" id="key-b">B</button>
+                    <button type="button" class="key" onclick="keyPress('N')" id="key-n">N</button>
+                    <button type="button" class="key" onclick="keyPress('M')" id="key-m">M</button>
+                    <button type="button" class="key-alt" onclick="backspacePress()" id="key-backspace">&lt;X</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
