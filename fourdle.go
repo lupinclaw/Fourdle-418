@@ -148,6 +148,58 @@ func getWords(userID int) string {
     return strings.Join(results, "\n")
 }
 
+func getGames(userID int) string {
+    log.Printf("[INFO] Attempting to get games for user [%d]", userID);
+
+    var results []string
+    var err error
+    rows, err := db.Query("SELECT U.Date, COUNT(U.GameID) FROM UserGame U, Game G WHERE U.GameID = G.GameID AND U.UserID = $1 AND G.WinOrLoss = 0 GROUP BY U.Date HAVING U.Date >= DATE('now', '-30 days');", userID);
+    if err == sql.ErrNoRows { log.Printf("No rows"); return ""}
+    fatal(err, "[query] Could not read games from database");
+
+    for rows.Next() {
+        var date string
+        var number string
+
+        // Scan the current row into the result variable
+        err := rows.Scan(&date, &number)
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        results = append(results, date)
+        results = append(results, number)
+    }
+
+    return strings.Join(results, "\n")
+}
+
+func getGamesWon(userID int) string {
+    log.Printf("[INFO] Attempting to get games for user [%d]", userID);
+
+    var results []string
+    var err error
+    rows, err := db.Query("SELECT U.Date, COUNT(U.GameID) FROM UserGame U, Game G WHERE U.GameID = G.GameID AND U.UserID = $1 AND G.WinOrLoss = 1 GROUP BY U.Date HAVING U.Date >= DATE('now', '-30 days');", userID);
+    if err == sql.ErrNoRows { log.Printf("No rows"); return ""}
+    fatal(err, "[query] Could not read games from database");
+
+    for rows.Next() {
+        var date string
+        var number string
+
+        // Scan the current row into the result variable
+        err := rows.Scan(&date, &number)
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        results = append(results, date)
+        results = append(results, number)
+    }
+
+    return strings.Join(results, "\n")
+}
+
 func main() {
     var err error
     
@@ -174,14 +226,6 @@ func main() {
             _, err := stmt.Exec(fourdle)
             fatal(err, "Could not insert fourdle", fourdle)
         }
-    }
-
-    // populate sample data if not already there
-    var gameCount int
-    err = db.QueryRow("select Count(*) from Game").Scan(&gameCount)
-    fatal(err, "query failed")
-    if (gameCount == 0) {
-        execSqlFile("sampledata.sql")
     }
 
     // set up http endpoints
@@ -271,6 +315,28 @@ func main() {
 
         resp.Write([]byte(result));
     })
+
+     http.HandleFunc("/get-games", func(resp http.ResponseWriter, req *http.Request) {
+            resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+            userID := 1
+
+            var result string
+            result = getGames(userID);
+
+            resp.Write([]byte(result));
+        })
+
+     http.HandleFunc("/get-games-won", func(resp http.ResponseWriter, req *http.Request) {
+         resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+         userID := 1
+
+         var result string
+         result = getGamesWon(userID);
+
+         resp.Write([]byte(result));
+     })
 
     // profit
     log.Println("Serving at http://localhost"+port)
