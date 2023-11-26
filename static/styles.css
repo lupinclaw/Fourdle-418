@@ -7,6 +7,8 @@
     --linkHover: #6edbf9;
     --linkVisited: #4d595e;
     --submitHover: #272736;
+    --navigation: #1c1c2a;
+    --navigationHover: #272736;
 }
 
 body {
@@ -80,4 +82,115 @@ a:hover {
 
 a:visited {
     color: var(--linkVisited);
+}
+
+span.size-48 {
+    font-size: 48px;
+    font-variation-settings: 'OPSZ' 48;
+}
+
+.navigation {
+    overflow: hidden;
+    background-color: var(--navigation);
+    text-align: right;
+    font-size: 20px;
+}
+
+.navigation a {
+    color: var(--text);
+    background-color: var(--navigation);
+    display: block;
+    padding: 0.5rem 1rem 0.5rem 0;
+    text-decoration: none;
+}
+
+.navigation a:hover {
+    background-color: var(--navigationHover);
+}
+
+#menuIcon {
+    display: block;
+    overflow: hidden;
+    color: var(--text);
+    background-color: var(--navigation);
+    text-align: right;
+    padding-right: 1rem;
+    font-size: 20px;
+}
+
+#menuIcon:hover {
+    background-color: var(--navigationHover);
+}
+
+#menuLinks{
+    display: none;
+}
+
+.listofWords h3 {
+    white-space: pre-line;
+}
+
+h2 {
+    padding-left: 3rem;
+}
+
+h3 {
+    display: inline-block;
+    padding-left: 5rem;
+}
+
+.metrics {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+#seenWordsLink {
+    display: block;
+    padding-left: 5rem;
+}
+
+.chartIcon {
+    margin-left: 1rem;
+    vertical-align: middle;
+}
+
+span.size-30 {
+    font-size: 30px;
+    font-variation-settings: 'OPSZ' 30;
+}
+
+.charts {
+    display: flex;
+    flex-direction: column;
+}
+
+.charts div {
+    margin: auto;
+}
+
+button {
+    height: 20px;
+    width: 200px;
+    margin: 5px;
+    background-color: var(--link);
+    border: none;
+    border-radius: 3px;
+}
+
+.linkButton, .linkButton:hover, .linkButton:visited {
+    color: black;
+    text-decoration: none;
+    padding-top: 0;
+}
+
+button:hover {
+    background-color: var(--linkHover);
+}
+
+#buttonDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 50px;
 }

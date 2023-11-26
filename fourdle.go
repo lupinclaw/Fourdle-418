@@ -74,6 +74,134 @@ func login(email, password string) error {
     return nil
 }
 
+func getNumberOfGames(userID int) string {
+    log.Printf("[INFO] Attempting to query number of games for user [%d]", userID);
+
+    var result string
+    var err error
+    err = db.QueryRow("SELECT COUNT(GameID) FROM UserGame WHERE UserID = $1", userID).Scan(&result)
+    if err == sql.ErrNoRows { return "0"}
+    fatal(err, "[query] Could not read games from database");
+
+    log.Printf("[INFO] Number of games [%s]", result);
+    return result
+}
+
+func getNumberOfGamesWon(userID int) string {
+    log.Printf("[INFO] Attempting to query number of games won for user [%d]", userID);
+
+    var result string
+    var err error
+    err = db.QueryRow("SELECT COUNT(U.GameID) FROM UserGame U, Game G WHERE G.GameID = U.GameID AND UserID = $1 AND G.WinOrLoss = 1", userID).Scan(&result)
+    if err == sql.ErrNoRows { return "0"}
+    fatal(err, "[query] Could not read games from database");
+
+    log.Printf("[INFO] Number of games won [%s]", result);
+    return result
+}
+
+func getRecentWords(userID int) string {
+    log.Printf("[INFO] Attempting to query 10 most recent words");
+
+    var results []string
+    var err error
+    rows, err := db.Query("SELECT W.Letters FROM UserGame U, Game G, Word W WHERE U.UserID = $1 AND U.GameID = G.GameID AND G.WordID = W.WordID ORDER BY U.Date DESC LIMIT 10;", userID);
+    if err == sql.ErrNoRows { return ""}
+    fatal(err, "[query] Could not read words from database");
+
+    for rows.Next() {
+        var result string
+
+        // Scan the current row into the result variable
+        err := rows.Scan(&result)
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        results = append(results, result)
+    }
+
+    log.Printf("[INFO] Recent words: [%s]", results);
+    return strings.Join(results, "\n")
+}
+
+func getWords(userID int) string {
+    log.Printf("[INFO] Attempting to query 10 most recent words");
+
+    var results []string
+    var err error
+    rows, err := db.Query("SELECT W.Letters FROM UserGame U, Game G, Word W WHERE U.UserID = $1 AND U.GameID = G.GameID AND G.WordID = W.WordID ORDER BY U.Date DESC;", userID);
+    if err == sql.ErrNoRows { return ""}
+    fatal(err, "[query] Could not read words from database");
+
+    for rows.Next() {
+        var result string
+
+        // Scan the current row into the result variable
+        err := rows.Scan(&result)
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        results = append(results, result)
+    }
+
+    log.Printf("[INFO] Recent words: [%s]", results);
+    return strings.Join(results, "\n")
+}
+
+func getGames(userID int) string {
+    log.Printf("[INFO] Attempting to get games for user [%d]", userID);
+
+    var results []string
+    var err error
+    rows, err := db.Query("SELECT U.Date, COUNT(U.GameID) FROM UserGame U, Game G WHERE U.GameID = G.GameID AND U.UserID = $1 AND G.WinOrLoss = 0 GROUP BY U.Date HAVING U.Date >= DATE('now', '-30 days');", userID);
+    if err == sql.ErrNoRows { log.Printf("No rows"); return ""}
+    fatal(err, "[query] Could not read games from database");
+
+    for rows.Next() {
+        var date string
+        var number string
+
+        // Scan the current row into the result variable
+        err := rows.Scan(&date, &number)
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        results = append(results, date)
+        results = append(results, number)
+    }
+
+    return strings.Join(results, "\n")
+}
+
+func getGamesWon(userID int) string {
+    log.Printf("[INFO] Attempting to get games for user [%d]", userID);
+
+    var results []string
+    var err error
+    rows, err := db.Query("SELECT U.Date, COUNT(U.GameID) FROM UserGame U, Game G WHERE U.GameID = G.GameID AND U.UserID = $1 AND G.WinOrLoss = 1 GROUP BY U.Date HAVING U.Date >= DATE('now', '-30 days');", userID);
+    if err == sql.ErrNoRows { log.Printf("No rows"); return ""}
+    fatal(err, "[query] Could not read games from database");
+
+    for rows.Next() {
+        var date string
+        var number string
+
+        // Scan the current row into the result variable
+        err := rows.Scan(&date, &number)
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        results = append(results, date)
+        results = append(results, number)
+    }
+
+    return strings.Join(results, "\n")
+}
+
 func main() {
     var err error
     
@@ -117,7 +245,7 @@ func main() {
         stmt1.Close()
         stmt2.Close()
     }
-    
+
     // set up http endpoints
     
     fs := http.FileServer(http.Dir("./static/"))
@@ -159,7 +287,75 @@ func main() {
         // TODO: return session token in response
         http.Redirect(resp, req, "/", http.StatusFound)
     })
-    
+
+    http.HandleFunc("/get-number-of-games", func(resp http.ResponseWriter, req *http.Request) {
+        resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+        userID := 1
+
+        var result string
+        result = getNumberOfGames(userID);
+
+        resp.Write([]byte(result));
+        // TODO: return session token in response
+        // http.Redirect(resp, req, "/", http.StatusFound)
+    })
+
+    http.HandleFunc("/get-number-of-games-won", func(resp http.ResponseWriter, req *http.Request) {
+        resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+        userID := 1
+
+        var result string
+        result = getNumberOfGamesWon(userID);
+
+        resp.Write([]byte(result));
+    })
+
+    http.HandleFunc("/get-recent-words", func(resp http.ResponseWriter, req *http.Request) {
+        resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+        userID := 1
+
+        var result string
+        result = getRecentWords(userID);
+
+        resp.Write([]byte(result));
+    })
+
+    http.HandleFunc("/get-words", func(resp http.ResponseWriter, req *http.Request) {
+        resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+        userID := 1
+
+        var result string
+        result = getWords(userID);
+
+        resp.Write([]byte(result));
+    })
+
+     http.HandleFunc("/get-games", func(resp http.ResponseWriter, req *http.Request) {
+            resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+            userID := 1
+
+            var result string
+            result = getGames(userID);
+
+            resp.Write([]byte(result));
+        })
+
+     http.HandleFunc("/get-games-won", func(resp http.ResponseWriter, req *http.Request) {
+         resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
+         userID := 1
+
+         var result string
+         result = getGamesWon(userID);
+
+         resp.Write([]byte(result));
+     })
+
     // profit
     log.Println("Serving at http://localhost"+port)
     fatal(http.ListenAndServe(port, nil), "Could not start server")
