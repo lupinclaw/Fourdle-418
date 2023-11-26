@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Fourdle - Edit Account</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Edit Your Fourdle Account</h1>
+    <p>Please update your account details below:</p>
+    <form method="post" action="edit-account">
+      <fieldset>
+        <label for="email">Email:
+        <input type="email" id="email" name="email" required></label>
+        <br>
+        <label for="password">New Password:
+        <input type="password" id="password" name="password" required></label>
+        <br>
+        <label for="confirm_password">Confirm New Password:
+        <input type="password" id="confirm_password" name="confirm_password" required></label>
+        <input type="submit" value="Update Account">
+      </fieldset>
+    </form>
+  </body>
+</html>

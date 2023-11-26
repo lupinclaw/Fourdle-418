@@ -17,6 +17,7 @@ To install and run the project, follow these steps:
 
 ```
 cls && go build fourdle.go && fourdle.exe
+## for mac : clear && go build fourdle.go && ./fourdle
 ```
 
 ## Code Style
