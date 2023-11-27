@@ -201,6 +201,42 @@ func getGamesWon(userID int) string {
 
     return strings.Join(results, "\n")
 }
+func editEmail(email string) error {
+    log.Printf("[INFO] [%v] Attempting to edit email.\n", email)
+
+    // check if email is valid
+    _, err := mail.ParseAddress(email)
+    if err != nil {
+        return err
+    }
+
+    // update the table
+    _, err = db.Exec("update User set Email = $1 where Email = $2;", email, email)
+    if err != nil {
+        return err
+    }
+    log.Printf("[INFO] [%v] Updated email.\n", email)
+    return nil
+}
+
+func editPassword(email, password string) error {
+    log.Printf("[INFO] [%v] Attempting to edit password.\n", email)
+
+    // generate password hash
+    hash, err := bcrypt.GenerateFromPassword([]byte(password), 8)
+    if err != nil {
+        return err
+    }
+
+    // update the table
+    _, err = db.Exec("update User set PasswordSaltAndHash = $1 where Email = $2;", string(hash[:]), email)
+    if err != nil {
+        return err
+    }
+    log.Printf("[INFO] [%v] Updated password.\n", email)
+    return nil
+}
+
 
 func main() {
     var err error
@@ -356,6 +392,50 @@ func main() {
          resp.Write([]byte(result));
      })
 
+     http.HandleFunc("/edit-account", func(resp http.ResponseWriter, req *http.Request) {
+        if req.Method != http.MethodPost {
+            http.Error(resp, "Invalid request method", http.StatusMethodNotAllowed)
+            return
+        }
+    
+        err := req.ParseForm()
+        if err != nil {
+            http.Error(resp, "Failed to parse form", http.StatusBadRequest)
+            return
+        }
+    
+        email := req.FormValue("email")
+        password := req.FormValue("password")
+        confirmPassword := req.FormValue("confirm_password")
+    
+        if password != confirmPassword {
+            http.Error(resp, "Passwords do not match", http.StatusBadRequest)
+            return
+        }
+    
+        if email != "" {
+            // If email is provided, update email
+            if err = editEmail(email); err != nil {
+                log.Printf("[INFO] [%v] Failed to edit email: %v\n", email, err)
+                resp.WriteHeader(http.StatusBadRequest)
+                io.WriteString(resp, err.Error())
+                return
+            }
+        }
+    
+        if password != "" {
+            // If password is provided, update password
+            if err = editPassword(email, password); err != nil {
+                log.Printf("[INFO] [%v] Failed to edit password: %v\n", email, err)
+                resp.WriteHeader(http.StatusBadRequest)
+                io.WriteString(resp, err.Error())
+                return
+            }
+        }
+    
+        http.Redirect(resp, req, "/", http.StatusFound)
+    })
+    
     // profit
     log.Println("Serving at http://localhost"+port)
     fatal(http.ListenAndServe(port, nil), "Could not start server")
