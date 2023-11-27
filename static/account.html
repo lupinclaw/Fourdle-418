@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fourdle - Account Settings</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="navigationBar">
+    <div class="navigation" id="menuLinks">
+      <a href="index.html">Home</a>
+      <a href="metrics.html">Metrics</a>
+      <a href="account.html">Account Settings</a>
+    </div>
+  </div>
+
+    <h1>Your Account Details</h1>
+
+    <div id="accountDetails">
+      <fieldset>
+        <p><strong>Email:</strong> user@example.com</p>
+        <br>
+        <p><strong>Password:</strong> ********</p>
+        <button type="button" class="btn btn-primary" onclick="redirectToEditAccount()">
+          Edit Account
+        </button>
+      </fieldset>
+    </div>
+
+    
+    
+    <script>
+      function redirectToEditAccount() {
+        window.location.href = "editaccount.html";
+      }
+    </script>
+
+    
+
+</body>
+</html>
+<style>
+  #accountDetails {
+    width: 70%; 
+    margin: 0 auto; 
+    padding: 50px; 
+  }
+</style>
+

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fourdle - Edit Account</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <h1>Edit Your Fourdle Account</h1>
+    <p>Please update your account details below:</p>
+    <form method="post" action="edit-account">
+        <fieldset>
+            <label for="email">Email:
+                <input type="email" id="email" name="email">
+            </label>
+            <br>
+            <label for="password">New Password:
+                <input type="password" id="password" name="password">
+            </label>
+            <br>
+            <label for="confirm_password">Confirm New Password:
+                <input type="password" id="confirm_password" name="confirm_password">
+            </label>
+            <input type="submit" value="Update Account">
+            <button type="button" onclick="cancelEdit()" class="btn-submit">Cancel</button>
+        </fieldset>
+    </form>
+
+    <script>
+        function cancelEdit() {
+            window.location.href = "account.html";
+        }
+    </script>
+    <style>
+        /* Add a style for the cancel button */
+        .btn-cancel {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #ccc;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</body>
+</html>
