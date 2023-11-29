@@ -282,6 +282,16 @@ func main() {
         stmt2.Close()
     }
 
+    var errorValue error
+    var exampleuser string
+    errorValue = db.QueryRow("SELECT Email from User WHERE Email LIKE 'exampleuser@test.com'").Scan(&exampleuser)
+    if errorValue == sql.ErrNoRows {
+        // Example user doesn't exist, create them and add sample data
+        execSqlFile("sampledata.sql")
+    } else if errorValue != nil {
+        fatal(errorValue, "query failed")
+    }
+
     // set up http endpoints
     
     fs := http.FileServer(http.Dir("./static/"))

@@ -326,7 +326,13 @@ async function populateDictionaries() {
 }
 
 function getWinRateNumber(index) {
-    var returnVal = (parseFloat(gamesWon[index]) / (parseFloat(gamesWon[index]) + parseFloat(gamesPlayed[index]))) * 100;
+    if (gamesWon[index] === undefined) {
+        return 0.00;
+    }
+    else if (gamesPlayed[index] === undefined) {
+        return 100.00;
+    }
+    var returnVal = (parseFloat(gamesWon[index]) / ((parseFloat(gamesWon[index]) + parseFloat(gamesPlayed[index])))) * 100;
     if (!isNaN(returnVal)) {
         return returnVal;
     }
