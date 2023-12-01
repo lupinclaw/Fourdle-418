@@ -6,7 +6,8 @@ Wordle but Fourdle!
 
 ## Prerequisites
 Before you begin, ensure you have met the following requirements:
-- You have installed the latest version of Go from https://go.dev/dl/ 
+- You have installed the latest version of Go from https://go.dev/dl/
+- You have installed the latest version of MingGW if you're on windows from https://winlibs.com/ (UCRT and POSIX is preferred) 
 
 ## Installing and Running the Project
 To install and run the project, follow these steps:
