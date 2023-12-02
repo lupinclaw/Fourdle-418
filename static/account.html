@@ -18,9 +18,9 @@
 
     <div id="accountDetails">
       <fieldset>
-        <p><strong>Email:</strong> user@example.com</p>
+        <p><strong>Email:</strong><p id="email">user@example.com</p></p>
         <br>
-        <p><strong>Password:</strong> ********</p>
+        <p><strong>Password:</strong> <p>********</p></p>
         <button type="button" class="btn btn-primary" onclick="redirectToEditAccount()">
           Edit Account
         </button>
@@ -30,9 +30,29 @@
     
     
     <script>
+      //cookies = document.cookie.split("; ");
+
       function redirectToEditAccount() {
         window.location.href = "editaccount.html";
       }
+
+      window.onload = function() {
+      fetch('/get-email')
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              return response.text();
+          })
+          .then(email => {
+              console.log('Email:', email);
+              // Use the email here
+              document.getElementById("email").textContent = email;
+          })
+          .catch(error => {
+              console.error('There has been a problem with your fetch operation:', error);
+          });
+      ;}
     </script>
 
     

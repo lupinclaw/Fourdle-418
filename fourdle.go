@@ -34,7 +34,6 @@ var (
     secret = []byte("secretKey") // TODO: should be from environment
     store = sessions.NewCookieStore(secret)
     db *sql.DB
-    
 )
 
 func signup(email string, password string) error {
@@ -260,7 +259,8 @@ func isSessionValid(r *http.Request, name string) (bool, error) {
 
 func main() {
     var err error
-    
+    store.Options.MaxAge = 3600*3;
+
     // init database
     db, err = sql.Open("sqlite3", "fourdle.db")
     if err != nil { log.Fatal(err) }
@@ -333,9 +333,11 @@ func main() {
             return
         }
         
-        //send back cookie
+        //save session cookie
+        session.Values["email"] = email
         session.Values["authenticated"] = true
         session.Save(req, resp)
+
         http.Redirect(resp, req, "/", http.StatusFound)
         
     })
@@ -480,6 +482,23 @@ func main() {
         resp.WriteHeader(http.StatusOK)
     })
     
+    http.HandleFunc("/get-email", func(resp http.ResponseWriter, req *http.Request) {
+        session, err := store.Get(req, "fourdle-session")
+        if err != nil {
+            http.Error(resp, "Session not found", http.StatusUnauthorized)
+            log.Printf("Session not found", err)
+            return
+        }
+        email, ok := session.Values["email"]
+        if !ok {
+            http.Error(resp, "Email not found", http.StatusUnauthorized)
+            log.Printf("Email not found", err)
+            return
+        }
+        resp.Write([]byte(email.(string)))
+    })
+    
+
     // profit
     log.Println("Serving at http://localhost"+port)
     fatal(http.ListenAndServe(port, nil), "Could not start server")

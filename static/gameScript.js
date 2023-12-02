@@ -149,6 +149,9 @@ window.onload = function() {
             } else {
                 // The session is not valid, handle the error
                 console.error('Invalid session');
+                document.getElementById('dp1').style.display = '';
+                document.getElementById('dp2').style.display = 'none';
+                document.getElementById('dp3').style.display = 'none';
             }
         })
         .catch(error => {
