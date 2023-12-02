@@ -1,34 +1,40 @@
 package main
 
 import (
-    // "context"
-    "log"
-    "io"
-    "io/ioutil"
-    "strings"
-    "fmt"
-    "errors"
-    "math/rand"
-    "reflect"
-    "runtime/debug"
-    "net/http"
-    "time"
-    // "net/url"
-    "net/mail"
-    "database/sql"
-    // "encoding/json"
-    "os"
-    // "golang.org/x/oauth2"
-    // "golang.org/x/oauth2/paypal"
-    "golang.org/x/crypto/bcrypt"
-    // "github.com/golang-jwt/jwt"
-    _  "github.com/mattn/go-sqlite3"
+	// "context"
+	"errors"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"net/http"
+	"reflect"
+	"runtime/debug"
+	"strings"
+	"time"
+
+	// "net/url"
+	"database/sql"
+	"net/mail"
+
+	// "encoding/json"
+	"os"
+	// "golang.org/x/oauth2"
+	// "golang.org/x/oauth2/paypal"
+	"github.com/gorilla/sessions"
+	"golang.org/x/crypto/bcrypt"
+
+	// "github.com/golang-jwt/jwt"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
     port   = ":8080"             // TODO: should be from environment
     secret = []byte("secretKey") // TODO: should be from environment
+    store = sessions.NewCookieStore(secret)
     db *sql.DB
+    
 )
 
 func signup(email string, password string) error {
@@ -69,6 +75,7 @@ func login(email, password string) error {
     
     err = bcrypt.CompareHashAndPassword(hash, []byte(password))
     if err != nil { return errors.New("Entered incorrect password") }
+    
     
     log.Printf("[INFO] [%v] Signed in.\n", email)
     return nil
@@ -237,6 +244,19 @@ func editPassword(email, password string) error {
     return nil
 }
 
+func isSessionValid(r *http.Request, name string) (bool, error) {
+    session, err := store.Get(r, name)
+    if err != nil {
+        return false, err
+    }
+
+    // Check if user is authenticated
+    if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+        return false, nil
+    }
+
+    return true, nil
+}
 
 func main() {
     var err error
@@ -303,6 +323,8 @@ func main() {
     http.HandleFunc("/sign-in", func(resp http.ResponseWriter, req *http.Request) {
         query := req.URL.Query()
         email, password := query.Get("email"), query.Get("password")
+        //make cookie
+        session, _ := store.Get(req, "fourdle-session")
         
         if err = login(email, password); err != nil {
             log.Printf("[INFO] [%v] Rejected login: %v\n", email, err)
@@ -311,8 +333,11 @@ func main() {
             return
         }
         
-        // TODO: return session token in response
+        //send back cookie
+        session.Values["authenticated"] = true
+        session.Save(req, resp)
         http.Redirect(resp, req, "/", http.StatusFound)
+        
     })
     
     http.HandleFunc("/sign-up", func(resp http.ResponseWriter, req *http.Request) {
@@ -444,6 +469,15 @@ func main() {
         }
     
         http.Redirect(resp, req, "/", http.StatusFound)
+    })
+
+    http.HandleFunc("/check-cookie", func(resp http.ResponseWriter, req *http.Request) {
+        isValid, err := isSessionValid(req, "fourdle-session")
+        if err != nil || !isValid {
+            http.Error(resp, "Invalid session", http.StatusUnauthorized)
+            return
+        }
+        resp.WriteHeader(http.StatusOK)
     })
     
     // profit

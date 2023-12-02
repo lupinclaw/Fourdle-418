@@ -137,3 +137,22 @@ function backspacePress() {
     tile.innerHTML = ""
     letters--
 }
+
+window.onload = function() {
+    fetch('/check-cookie')
+        .then(response => {
+            if (response.status === 200) {
+                // The session is valid, change some elements on the document
+                document.getElementById('dp1').style.display = 'none';
+                document.getElementById('dp2').style.display = '';
+                document.getElementById('dp3').style.display = '';
+            } else {
+                // The session is not valid, handle the error
+                console.error('Invalid session');
+            }
+        })
+        .catch(error => {
+            // There was an error with the fetch request, handle the error
+            console.error('Fetch error: ', error);
+        });
+};

@@ -1,12 +1,13 @@
+:root{
+    --bs-body-bg: #121213!important;
+}
+
 html, body {
     text-align: center;
-
-    background-color: #121213;
 }
 
 header {
-    padding-bottom: 1%;
-    text-align: center;
+    padding: 0.2em;
 
     font-size: 36px;
     font-family: "Comic Sans MS", "Comic Sans", cursive;
@@ -15,10 +16,33 @@ header {
     border-bottom: 1px solid #565758;
 }
 
+.fDropdown{
+    border-radius: 0%!important;
+    background-color: black!important;
+}
+
+.fDropdownMenu{
+    /* background-color: azure!important; */
+}
+
+.fDropdownItem {
+    color: white!important;
+}
+.fDropdownItem:hover {
+    background-color: white;
+}
+
+.fDropdownLink {
+    color: white!important;
+}
+.fDropdownLink:hover {
+    background-color: black!important;
+}
+
 #game-container {
     height: 700px;
     width: 550px;
-    padding: 2%;
+    padding-top: 2%;
     margin: auto;
 
     /*border: 2px solid #565758;*/
@@ -53,6 +77,8 @@ td .tile {
     color: white;
     font-size: 36px;
     font-family: "Franklin Gothic", serif;
+
+    text-align: center;
 
     border: 2px solid #3a3a3c;
 }
@@ -96,3 +122,4 @@ td .tile {
 #keyboard .keyboard-row .key-alt {
     width: 16%;
 }
+
