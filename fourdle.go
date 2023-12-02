@@ -63,21 +63,25 @@ func signup(email string, password string) error {
     return nil;
 }
 
-func login(email, password string) error {
+func login(email, password string) (int, error) {
     log.Printf("[INFO] [%v] Attempting to sign in.\n", email)
     var hash []byte
+    var userID int
     var err error
     
     err = db.QueryRow("select PasswordSaltAndHash from User where Email=$1", email).Scan(&hash)
-    if err == sql.ErrNoRows { return errors.New("User is not registered") }
+    if err == sql.ErrNoRows { return -1, errors.New("User is not registered") }
     fatal(err, "[login] Could not read password from database");
     
     err = bcrypt.CompareHashAndPassword(hash, []byte(password))
-    if err != nil { return errors.New("Entered incorrect password") }
+    if err != nil { return -1, errors.New("Entered incorrect password") }
     
-    
+    err = db.QueryRow("select UserID from User where Email=$1", email).Scan(&userID)
+    if err != nil { return -1, errors.New("Could not get UserID") }
+
     log.Printf("[INFO] [%v] Signed in.\n", email)
-    return nil
+    
+    return userID, nil
 }
 
 func getNumberOfGames(userID int) string {
@@ -325,16 +329,18 @@ func main() {
         email, password := query.Get("email"), query.Get("password")
         //make cookie
         session, _ := store.Get(req, "fourdle-session")
-        
-        if err = login(email, password); err != nil {
+
+        userID, err := login(email, password)
+        if err != nil {
             log.Printf("[INFO] [%v] Rejected login: %v\n", email, err)
             resp.WriteHeader(http.StatusBadRequest)
             io.WriteString(resp, err.Error())
             return
         }
-        
+
         //save session cookie
         session.Values["email"] = email
+        session.Values["userID"] = userID
         session.Values["authenticated"] = true
         session.Save(req, resp)
 
@@ -355,7 +361,8 @@ func main() {
             return
         }
         
-        fatal(login(email, password), "Could not log in to new account")
+        _, err := login(email, password)
+        fatal(err, "Could not log in to new account")
         
         // TODO: return session token in response
         http.Redirect(resp, req, "/", http.StatusFound)
