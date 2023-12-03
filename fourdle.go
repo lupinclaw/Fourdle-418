@@ -430,6 +430,14 @@ func main() {
      })
 
      http.HandleFunc("/edit-account", func(resp http.ResponseWriter, req *http.Request) {
+        
+        sessionErr := store.Get(req, "fourdle-session")
+        if sessionErr != nil {
+            http.Error(resp, "Access denied! User not logged in.", http.StatusUnauthorized)
+            log.Printf("Access denied! User not logged in.", err)
+            return
+        }
+        
         if req.Method != http.MethodPost {
             http.Error(resp, "Invalid request method", http.StatusMethodNotAllowed)
             return
