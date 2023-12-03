@@ -309,6 +309,29 @@ func main() {
     fs := http.FileServer(http.Dir("./static/"))
     http.HandleFunc("/", func(resp http.ResponseWriter, req *http.Request) {
         log.Printf("[INFO] Request to `/` %v\n", pp(*req))
+        
+        // List of paths that do not require authentication
+        unprotectedPaths := []string{"/", "/gameStyle.css", "/navigationStyle.css", "/gameScript.js", "/scripts.js", "/login.html", "/signup.html"}
+
+        // Check if the requested path is in the list of unprotected paths
+        requiresAuth := true
+        for _, path := range unprotectedPaths {
+            if req.URL.Path == path {
+                requiresAuth = false
+                break
+            }
+        }
+
+        if requiresAuth {
+            session, _ := store.Get(req, "session-name")
+
+            // Check if user is authenticated
+            if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+                http.Error(resp, "Forbidden", http.StatusForbidden)
+                return
+            }
+        }
+
         fs.ServeHTTP(resp, req)
     })
     
@@ -430,13 +453,6 @@ func main() {
      })
 
      http.HandleFunc("/edit-account", func(resp http.ResponseWriter, req *http.Request) {
-        
-        sessionErr := store.Get(req, "fourdle-session")
-        if sessionErr != nil {
-            http.Error(resp, "Access denied! User not logged in.", http.StatusUnauthorized)
-            log.Printf("Access denied! User not logged in.", err)
-            return
-        }
         
         if req.Method != http.MethodPost {
             http.Error(resp, "Invalid request method", http.StatusMethodNotAllowed)
