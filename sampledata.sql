@@ -1,6 +1,7 @@
 -- Create example user for testing purposes
 INSERT INTO User(Email, PasswordSaltAndHash)
-    VALUES('exampleuser@test.com', '$2a$08$WcHvP.JwUmPvZ5qNsk0pr.ZpDP/yaPB/..mh6vFGUSvE8UINL4XDq');
+    VALUES('exampleuser@test.com', '$2a$08$VkJ9cbU0AK5vG/E.MPI.ZeeGpkdz46hH8DyBVxIcBSxlaz2mSmU3i');
+    -- the password here is "exampleuser"
 
 -- Populate example data for the user
 

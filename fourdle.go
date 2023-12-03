@@ -85,7 +85,6 @@ func login(email, password string) (int, error) {
 }
 
 func getNumberOfGames(userID int) string {
-    log.Printf("[INFO] Attempting to query number of games for user [%d]", userID);
 
     var result string
     var err error
@@ -93,12 +92,10 @@ func getNumberOfGames(userID int) string {
     if err == sql.ErrNoRows { return "0"}
     fatal(err, "[query] Could not read games from database");
 
-    log.Printf("[INFO] Number of games [%s]", result);
     return result
 }
 
 func getNumberOfGamesWon(userID int) string {
-    log.Printf("[INFO] Attempting to query number of games won for user [%d]", userID);
 
     var result string
     var err error
@@ -106,12 +103,10 @@ func getNumberOfGamesWon(userID int) string {
     if err == sql.ErrNoRows { return "0"}
     fatal(err, "[query] Could not read games from database");
 
-    log.Printf("[INFO] Number of games won [%s]", result);
     return result
 }
 
 func getRecentWords(userID int) string {
-    log.Printf("[INFO] Attempting to query 10 most recent words");
 
     var results []string
     var err error
@@ -130,13 +125,10 @@ func getRecentWords(userID int) string {
 
         results = append(results, result)
     }
-
-    log.Printf("[INFO] Recent words: [%s]", results);
     return strings.Join(results, "\n")
 }
 
 func getWords(userID int) string {
-    log.Printf("[INFO] Attempting to query 10 most recent words");
 
     var results []string
     var err error
@@ -155,13 +147,10 @@ func getWords(userID int) string {
 
         results = append(results, result)
     }
-
-    log.Printf("[INFO] Recent words: [%s]", results);
     return strings.Join(results, "\n")
 }
 
 func getGames(userID int) string {
-    log.Printf("[INFO] Attempting to get games for user [%d]", userID);
 
     var results []string
     var err error
@@ -187,7 +176,6 @@ func getGames(userID int) string {
 }
 
 func getGamesWon(userID int) string {
-    log.Printf("[INFO] Attempting to get games for user [%d]", userID);
 
     var results []string
     var err error
@@ -371,20 +359,21 @@ func main() {
     http.HandleFunc("/get-number-of-games", func(resp http.ResponseWriter, req *http.Request) {
         resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-        userID := 1
+        session, _ := store.Get(req, "fourdle-session")
+        userID, _ := session.Values["userID"].(int)
+        log.Printf("[INFO] [%d] userID for get-number-of-games\n", userID)
 
         var result string
         result = getNumberOfGames(userID);
 
         resp.Write([]byte(result));
-        // TODO: return session token in response
-        // http.Redirect(resp, req, "/", http.StatusFound)
     })
 
     http.HandleFunc("/get-number-of-games-won", func(resp http.ResponseWriter, req *http.Request) {
         resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-        userID := 1
+        session, _ := store.Get(req, "fourdle-session")
+        userID, _ := session.Values["userID"].(int)
 
         var result string
         result = getNumberOfGamesWon(userID);
@@ -395,7 +384,8 @@ func main() {
     http.HandleFunc("/get-recent-words", func(resp http.ResponseWriter, req *http.Request) {
         resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-        userID := 1
+        session, _ := store.Get(req, "fourdle-session")
+        userID, _ := session.Values["userID"].(int)
 
         var result string
         result = getRecentWords(userID);
@@ -406,7 +396,8 @@ func main() {
     http.HandleFunc("/get-words", func(resp http.ResponseWriter, req *http.Request) {
         resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-        userID := 1
+        session, _ := store.Get(req, "fourdle-session")
+        userID, _ := session.Values["userID"].(int)
 
         var result string
         result = getWords(userID);
@@ -415,20 +406,22 @@ func main() {
     })
 
      http.HandleFunc("/get-games", func(resp http.ResponseWriter, req *http.Request) {
-            resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
+        resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-            userID := 1
+        session, _ := store.Get(req, "fourdle-session")
+        userID, _ := session.Values["userID"].(int)
 
-            var result string
-            result = getGames(userID);
+        var result string
+        result = getGames(userID);
 
-            resp.Write([]byte(result));
-        })
+        resp.Write([]byte(result));
+     })
 
      http.HandleFunc("/get-games-won", func(resp http.ResponseWriter, req *http.Request) {
          resp.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-         userID := 1
+         session, _ := store.Get(req, "fourdle-session")
+         userID, _ := session.Values["userID"].(int)
 
          var result string
          result = getGamesWon(userID);
