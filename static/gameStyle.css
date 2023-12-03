@@ -1,9 +1,8 @@
-:root{
-    --bs-body-bg: #121213!important;
-}
-
 html, body {
     text-align: center;
+    width: 100%;
+    background-color: #121213;
+    margin: 0;
 }
 
 header {
@@ -14,29 +13,6 @@ header {
     color: white;
 
     border-bottom: 1px solid #565758;
-}
-
-.fDropdown{
-    border-radius: 0%!important;
-    background-color: black!important;
-}
-
-.fDropdownMenu{
-    /* background-color: azure!important; */
-}
-
-.fDropdownItem {
-    color: white!important;
-}
-.fDropdownItem:hover {
-    background-color: white;
-}
-
-.fDropdownLink {
-    color: white!important;
-}
-.fDropdownLink:hover {
-    background-color: black!important;
 }
 
 #game-container {
