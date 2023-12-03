@@ -504,7 +504,6 @@ func main() {
         }
         resp.Write([]byte(email.(string)))
     })
-    
 
     // profit
     log.Println("Serving at http://localhost"+port)
