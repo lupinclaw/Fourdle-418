@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <title>Fourdle - Account Settings</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="navigationStyle.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
+  <script src="scripts.js"></script>
   <div class="navigationBar">
+    <a id="menuIcon" href="javascript:void(0);" onclick="onClickNav()"><span class="material-symbols-outlined size-48">menu</span></a>
     <div class="navigation" id="menuLinks">
       <a href="index.html">Home</a>
       <a href="metrics.html">Metrics</a>
@@ -31,7 +35,7 @@
     
     <script>
       function redirectToEditAccount() {
-        window.location.href = "editaccount.html";
+        window.location.href = "editAccount.html";
       }
     </script>
 

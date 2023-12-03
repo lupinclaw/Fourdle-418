@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
     <link rel="stylesheet" href="gameStyle.css">
+    <link rel="stylesheet" href="navigationStyle.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <head>
         <script src="gameScript.js" defer></script>
         <title>
             Fourdle Game
         </title>
     </head>
+    <script src="scripts.js"></script>
+    <div class="navigationBar">
+        <a id="menuIcon" href="javascript:void(0);" onclick="onClickNav()"><span class="material-symbols-outlined size-48">menu</span></a>
+        <div class="navigation" id="menuLinks">
+            <a href="index.html">Home</a>
+            <a href="metrics.html">Metrics</a>
+            <a href="account.html">Account Settings</a>
+        </div>
+    </div>
     <header>
         Fourdle
     </header>

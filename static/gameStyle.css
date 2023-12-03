@@ -1,7 +1,8 @@
 html, body {
     text-align: center;
-
+    width: 100%;
     background-color: #121213;
+    margin: 0;
 }
 
 header {
