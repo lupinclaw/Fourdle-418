@@ -323,7 +323,7 @@ func main() {
         }
 
         if requiresAuth {
-            session, _ := store.Get(req, "session-name")
+            session, _ := store.Get(req, "fourdle-session")
 
             // Check if user is authenticated
             if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
