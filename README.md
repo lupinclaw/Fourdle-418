@@ -19,6 +19,10 @@ To install and run the project, follow these steps:
 ```
 cls && go build fourdle.go && fourdle.exe
 ```
+## Navigating the Site
+To see some sample statistics, please log in to the example user account:  
+- username: exampleuser@test.com  
+- password: exampleuser
 
 ## Code Style
 Please refrain from running any IDEs or Go language style formatters on the codebase, as they may alter the preferred code style.
