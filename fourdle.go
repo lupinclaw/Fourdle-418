@@ -311,7 +311,7 @@ func main() {
         log.Printf("[INFO] Request to `/` %v\n", pp(*req))
         
         // List of paths that do not require authentication
-        unprotectedPaths := []string{"/", "/gameStyle.css", "/navigationStyle.css", "/gameScript.js", "/scripts.js", "/login.html", "/signup.html"}
+        unprotectedPaths := []string{"/", "/gameStyle.css", "/navigationStyle.css", "/gameScript.js", "/scripts.js", "/login.html", "/signup.html", "/styles.css"}
 
         // Check if the requested path is in the list of unprotected paths
         requiresAuth := true

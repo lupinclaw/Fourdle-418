@@ -143,15 +143,11 @@ window.onload = function() {
         .then(response => {
             if (response.status === 200) {
                 // The session is valid, change some elements on the document
-                document.getElementById('dp1').style.display = 'none';
-                document.getElementById('dp2').style.display = '';
-                document.getElementById('dp3').style.display = '';
+                document.getElementById('loginLink').style.display = 'none';
             } else {
                 // The session is not valid, handle the error
                 console.error('Invalid session');
-                document.getElementById('dp1').style.display = '';
-                document.getElementById('dp2').style.display = 'none';
-                document.getElementById('dp3').style.display = 'none';
+                document.getElementById('loginLink').style.display = 'block';
             }
         })
         .catch(error => {
